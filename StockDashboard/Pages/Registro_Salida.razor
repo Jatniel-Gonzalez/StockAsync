@@ -23,9 +23,14 @@
         <div class="row mb-3">
             <div class="col-md-12">
                 <label class="form-label">Nombre del producto</label>
-                <InputText class="form-control"
-                           @bind-Value="sale.Name_Product"
-                           @onchange="OnProductSelected"></InputText>
+                <InputSelect class="form-select" @bind-Value="sale.Name_Product" >
+                    <option value="0">-Seleccionar-</option>
+                       
+                    @foreach( var item in products)
+                    {
+                        <option value="@item.Name_Product">@item.Name_Product</option>
+                    }
+                       </InputSelect>
                 <ValidationMessage For="@(() => sale.Name_Product)" class="text-danger" />
             </div>
         </div>
@@ -72,6 +77,7 @@
     string btnTexto = string.Empty;
 
     ProductSale_DTO sale = new ProductSale_DTO();
+    List<ProductInput_DTO> products = new List<ProductInput_DTO>();
     decimal productUnitPrice = 0m; // Precio unitario del producto
     decimal calculatedTotalPrice => productUnitPrice * sale.Quantity; // Precio total calculado
 
@@ -83,6 +89,7 @@
             btnTexto = "Guardar Salida";
             titulo = "Salida producto";
         }
+        products = await productInput.GetAsync();
     }
 
     private async Task OnProductSelected(ChangeEventArgs e)
