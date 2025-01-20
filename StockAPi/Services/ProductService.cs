@@ -15,12 +15,6 @@ namespace StockAPi.Services
             _stockControlDbContext = stockControlDbContext;
         }
 
-        // Método para obtener el contexto de la base de datos
-        public StockControlDbContext GetStockControlDbContext()
-        {
-            return _stockControlDbContext;
-        }
-
         // Método para obtener todos los productos con sus categorías asociadas
         public async Task<List<ProductInput_DTO>> GetProductAsync()
         {
