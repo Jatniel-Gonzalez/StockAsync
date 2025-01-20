@@ -21,7 +21,7 @@ Este es un sistema de gestión de inventario desarrollado con:
 ## ⚙️ Configuración Inicial
 1. Clonar el repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/tu-repositorio.git
+   [git clone (https://github.com/Jatniel-Gonzalez/StockAsync.git)
    cd tu-repositorio
    ```
 
