@@ -43,11 +43,6 @@ Este es un sistema de gestión de inventario desarrollado con:
 - Usa las herramientas para gestionar productos, categorías y movimientos de inventario.
 
 ## 🗂️ Despliegue
-1. Publicar el backend:
-   ```bash
-   cd src/StockApi
-   dotnet publish -c Release -o ./publish
-   `
 - El script de la base de datos estará disponible en este repositorio en la carpeta correspondiente. Asegúrate de ejecutarlo para inicializar la base de datos.
 
 - Verifica los puertos en uso para evitar conflictos con otras aplicaciones.
