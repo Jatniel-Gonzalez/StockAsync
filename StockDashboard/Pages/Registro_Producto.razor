@@ -1,0 +1,138 @@
+﻿@page "/RegistroProductos"
+@page "/RegistroProductos/{ProductId:int}"
+
+@using StockDto;
+@using StockDashboard.Services;
+@using CurrieTechnologies.Razor.SweetAlert2;
+@using StockDashboard.Services.Interfaces;
+
+@inject IProductInput productInput;
+@inject IProductCategory productCategory;
+@inject SweetAlertService Swal;
+@inject NavigationManager navegacion;
+
+@page "/Product"
+
+<h3 class="text-center">@titulo</h3>
+
+<EditForm Model="product" OnValidSubmit="OnValidSubmit" class="d-flex justify-content-center">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="col-md-6 col-sm-12 p-4 border rounded shadow-lg">
+
+
+        <!-- Nombre del producto -->
+        <div class="form-group mb-3">
+            <label class="form-label">Nombre del producto</label>
+            <InputText class="form-control" @bind-Value="product.Name_Product" placeholder="Ingrese el nombre del producto" />
+            <ValidationMessage For="@(() => product.Name_Product)" class="text-danger" />
+        </div>
+
+        <!-- Categorías -->
+        <div class="form-group mb-3">
+            <label class="form-label">Categorías</label>
+            <InputSelect class="form-select" @bind-Value="product.CategoryId">
+                <option value="0">-Seleccionar-</option>
+                @foreach (var item in category)
+                {
+                    <option value="@item.CategoryId">@item.Name_Category</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => product.CategoryId)" class="text-danger" />
+        </div>
+
+        <!-- Descripción del producto -->
+        <div class="form-group mb-3">
+            <label class="form-label">Descripción del producto</label>
+            <InputTextArea class="form-control" rows="3" @bind-Value="product.Description" placeholder="Ingrese una descripción del producto" />
+            <ValidationMessage For="@(() => product.Description)" class="text-danger" />
+        </div>
+
+        <div class="row">
+            <!-- Stock del producto -->
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Cantidad del producto</label>
+                <InputNumber class="form-control" @bind-Value="product.Stock" TValue="int" />
+                <ValidationMessage For="@(() => product.Stock)" class="text-danger" />
+            </div>
+
+            <!-- Precio -->
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Precio</label>
+                <InputNumber class="form-control" @bind-Value="product.Price" TValue="decimal" />
+                <ValidationMessage For="@(() => product.Price)" class="text-danger" />
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-between mt-3">
+            <button class="btn btn-primary" type="submit">@btnTexto</button>
+            <a class="btn btn-warning" href="Registro">Volver</a>
+            <a class="btn btn-info" href="Category">Crear categoría</a>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int ProductId { get; set; } = 0;
+
+    string titulo = string.Empty;
+    string btnTexto = string.Empty;
+
+    ProductInput_DTO product = new ProductInput_DTO();
+    List<CategoryInput_DTO> category = new List<CategoryInput_DTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ProductId != 0)
+        {
+            product = await productInput.GetByAsync(ProductId);
+            btnTexto = "Actualizar producto";
+            titulo = "Producto Actualizado";
+        }
+        else
+        {
+            product.OperationDate = DateTime.Today;
+            btnTexto = "Guardar Producto";
+            titulo = "Nuevo Producto";
+        }
+        category = await productCategory.GetAsync();
+    }
+
+    private async Task OnValidSubmit()
+    {
+        int idDevuelto = 0;
+
+        if (ProductId == 0)
+        {
+            idDevuelto = await productInput.SavedAsync(product);
+            await ShowSweetAlert("¡Producto registrado!", "El producto ha sido guardado exitosamente.", "success");
+        }
+        else
+        {
+            idDevuelto = await productInput.UpdateAsync(ProductId, product);
+            await ShowSweetAlert("¡Producto actualizado!", "El producto ha sido actualizado exitosamente.", "info");
+        }
+
+        if (idDevuelto != 0)
+        {
+            navegacion.NavigateTo("/Registro");
+        }
+        else
+        {
+            await ShowSweetAlert("Error", "No se pudo guardar el producto. Por favor, inténtelo de nuevo.", "error");
+        }
+    }
+    private async Task ShowSweetAlert(string title, string message, string icon)
+    {
+        await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = title,
+                Text = message,
+                Icon = icon,
+                ConfirmButtonText = "OK"
+            });
+    }
+}

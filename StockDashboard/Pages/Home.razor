@@ -1,0 +1,48 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<div class="container d-flex justify-content-center my-5">
+    <div class="card shadow-sm p-4" style="max-width: 600px; border-radius: 15px; border: 1px solid #e3e3e3;">
+        <h1 class="mb-3 text-center">
+            <span class="hand-wave">👋</span> Bienvenidos a <span class="text-primary">StockSync</span>
+        </h1>
+
+        <p class="lead text-center">
+            <strong>StockSync</strong> es tu herramienta ideal para gestionar inventarios de manera eficiente,
+            permitiéndote realizar operaciones CRUD con sincronización en tiempo real.
+        </p>
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-12">
+                <h2 class="h5 text-secondary mb-3 text-center">Características principales:</h2>
+                <ul class="list-unstyled">
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-box-seam text-primary me-2" style="font-size: 1.5rem;"></i>
+                        <strong>Gestión completa:</strong> Realiza operaciones CRUD de manera rápida y segura.
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-arrow-repeat text-primary me-2" style="font-size: 1.5rem;"></i>
+                        <strong>Actualización en tiempo real:</strong> Sincroniza cambios instantáneamente.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        background: #ffffff;
+        transition: transform 0.3s ease; /* Transición suave */
+    }
+
+        .card:hover {
+            transform: scale(1.05); /* Agrandar ligeramente el card */
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); /* Más sombra para destacar el hover */
+        }
+
+    .lead {
+        font-size: 1rem;
+    }
+</style>

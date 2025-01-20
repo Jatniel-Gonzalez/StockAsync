@@ -1,0 +1,6 @@
+@StockLogicAPI_HostAddress = http://localhost:5116
+
+GET {{StockLogicAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

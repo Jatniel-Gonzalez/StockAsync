@@ -1,0 +1,59 @@
+## General .NET ##
+
+# Ignore user-specific files
+.vs/
+.vscode/
+.idea/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+# User-specific JetBrains Rider files
+.idea/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Dd]Release/
+[Dd]ReleasePublic/
+x64/
+x86/
+[Aa]rchive/
+[Aa]ssemblyInfo.cs
+appsettings.Development.json
+appsettings.json
+
+# .NET Core
+bin/
+obj/
+
+# Tye files
+.tye/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+## Blazor WebAssembly ##
+# Blazor WebAssembly files
+wwwroot/_content/
+
+# Blazor WebAssembly build output
+/wwwroot/*.pdb
+/wwwroot/*.dll
+/wwwroot/*.exe
+
+## Dependency directories ##
+node_modules/
+
+## JetBrains Rider ##
+.idea/
+
+## MacOS ##
+.DS_Store
+
+# Windows Installer files
+Thumbs.db
+ehthumbs.db

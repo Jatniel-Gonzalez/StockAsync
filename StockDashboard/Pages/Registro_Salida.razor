@@ -1,0 +1,136 @@
+﻿@page "/RegistroSalidas"
+
+@using StockDto;
+@using StockDashboard.Services;
+@using CurrieTechnologies.Razor.SweetAlert2;
+@using StockDashboard.Services.Interfaces;
+
+@inject IProductSales productSales;
+@inject IProductInput productInput;
+@inject SweetAlertService SweetAlertService;
+@inject NavigationManager navegacion;
+
+
+
+<h3 class="text-center">@titulo</h3>
+
+<EditForm Model="sale" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="col-md-6 col-sm-12 p-4 border rounded shadow-lg mx-auto">
+        <!-- Nombre del producto -->
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <label class="form-label">Nombre del producto</label>
+                <InputText class="form-control"
+                           @bind-Value="sale.Name_Product"
+                           @onchange="OnProductSelected"></InputText>
+                <ValidationMessage For="@(() => sale.Name_Product)" class="text-danger" />
+            </div>
+        </div>
+
+        <!-- Nombre del cliente -->
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <label class="form-label">Nombre del cliente</label>
+                <InputText class="form-control"
+                           @bind-Value="sale.CustomerName"></InputText>
+                <ValidationMessage For="@(() => sale.CustomerName)" class="text-danger" />
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Cantidad -->
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Cantidad</label>
+                <InputNumber class="form-control"
+                             @bind-Value="sale.Quantity"
+                             TValue="int"
+                             @oninput="OnQuantityChanged"></InputNumber>
+                <ValidationMessage For="@(() => sale.Quantity)" class="text-danger" />
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="row">
+            <div class="col-md-12 d-flex justify-content-start">
+                <button class="btn btn-primary me-2" type="submit">
+                    @btnTexto
+                </button>
+                <a class="btn btn-warning" href="Historialsalida">Volver</a>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int ProductId { get; set; } = 0;
+
+    string titulo = string.Empty;
+    string btnTexto = string.Empty;
+
+    ProductSale_DTO sale = new ProductSale_DTO();
+    decimal productUnitPrice = 0m; // Precio unitario del producto
+    decimal calculatedTotalPrice => productUnitPrice * sale.Quantity; // Precio total calculado
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ProductId == 0)
+        {
+            sale.SaleDate = DateTime.Today;
+            btnTexto = "Guardar Salida";
+            titulo = "Salida producto";
+        }
+    }
+
+    private async Task OnProductSelected(ChangeEventArgs e)
+    {
+        sale.Name_Product = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(sale.Name_Product))
+        {
+            // Obtén el producto desde el servicio
+            var product = await productInput.GetByAsync(sale.Product_Id);
+            if (product != null)
+            {
+                productUnitPrice = product.Price; // Asigna el precio unitario
+                StateHasChanged(); // Fuerza la actualización del componente
+            }
+        }
+    }
+
+    private void OnQuantityChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int quantity))
+        {
+            sale.Quantity = quantity; // Actualiza la cantidad en el modelo
+            StateHasChanged(); // Fuerza la actualización del componente
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        int idDevuelto = 0;
+
+        if (ProductId == 0)
+        {
+            sale.TotalPrice = calculatedTotalPrice; // Asegura que el total esté correcto
+            idDevuelto = await productSales.SavedAsync(sale);
+
+            if (idDevuelto != 0)
+            {
+                // Mostrar mensaje emergente de éxito usando SweetAlert
+                await SweetAlertService.FireAsync("¡Éxito!", "La salida del producto se ha guardado correctamente.", SweetAlertIcon.Success);
+
+                // Navegar después de mostrar el mensaje
+                navegacion.NavigateTo("/Historialsalida");
+            }
+            else
+            {
+                // Mostrar mensaje emergente de error usando SweetAlert
+                await SweetAlertService.FireAsync("Error", "No se pudo guardar la salida del producto. Por favor, inténtelo nuevamente.", SweetAlertIcon.Error);
+            }
+        }
+    }
+}

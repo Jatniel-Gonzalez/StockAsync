@@ -1,0 +1,101 @@
+﻿@page "/Category"
+
+@using StockDto;
+@using CurrieTechnologies.Razor.SweetAlert2;
+@using StockDashboard.Services;
+@using StockDashboard.Services.Interfaces;
+
+@inject SweetAlertService Swal;
+@inject IProductCategory producCategory;
+
+<h3 class="text-center">@((categoryId == 0) ? "Nueva Categoría" : "Actualizar Categoría")</h3>
+
+<EditForm Model="category" OnValidSubmit="OnValidSubmit" class="d-flex justify-content-center">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="col-md-6 col-sm-12 p-4 border rounded shadow-lg">
+        <!-- Input de Nombre de la Categoría -->
+        <div class="form-group mb-3">
+            <label for="categoryName">Nombre de la Categoría</label>
+            <InputText id="categoryName" @bind-Value="category.Name_Category" class="form-control" placeholder="Ingrese el nombre de la categoría" />
+            <ValidationMessage For="() => category.Name_Category" class="text-danger" />
+        </div>
+
+        <!-- Input de Descripción -->
+        <div class="form-group mb-3">
+            <label for="categoryDescription">Descripción</label>
+            <InputTextArea id="categoryDescription" @bind-Value="category.Description" class="form-control" placeholder="Ingrese una descripción de la categoría" rows="3" />
+            <ValidationMessage For="() => category.Description" class="text-danger" />
+        </div>
+
+        <!-- Input de Fecha de Operación -->
+        <div class="form-group mb-3">
+            <label for="operationDate">Fecha de Operación</label>
+            <InputDate id="operationDate" @bind-Value="category.OperationDate" class="form-control" />
+            <ValidationMessage For="() => category.OperationDate" class="text-danger" />
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">
+                @(categoryId == 0 ? "Guardar Categoría" : "Actualizar Categoría")
+            </button>
+            <a class="btn btn-warning" href="RegistroProductos">Volver</a>
+        </div>
+    </div>
+</EditForm>
+
+
+@if (categoryId != 0)
+{
+    <h4>Categoría Creada</h4>
+    <p><strong>Nombre:</strong> @category.Name_Category</p>
+    <p><strong>Descripción:</strong> @category.Description</p>
+    <p><strong>Fecha de Operación:</strong> @category.OperationDate?.ToString("dd/MM/yyyy")</p>
+}
+
+@code {
+    [Parameter]
+    public int categoryId { get; set; }
+
+    CategoryInput_DTO category = new CategoryInput_DTO();
+
+    private async Task OnValidSubmit()
+    {
+        if (categoryId == 0)
+        {
+            // Mostrar confirmación
+            var confirmResult = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "¿Estás seguro?",
+                    Text = "¿Deseas guardar esta categoría?",
+                    Icon = SweetAlertIcon.Question,
+                    ShowCancelButton = true,
+                    ConfirmButtonText = "Sí, guardar",
+                    CancelButtonText = "Cancelar"
+                });
+
+            if (confirmResult.IsConfirmed)
+            {
+                // Guardar la categoría
+                await producCategory.SavedAsync(category);
+
+                // Mostrar mensaje de éxito
+                await Swal.FireAsync("Categoría Creada", "La categoría ha sido guardada correctamente.", SweetAlertIcon.Success);
+
+                // Mostrar la categoría creada
+                categoryId = category.CategoryId; // Asumimos que la categoría tiene un Id después de ser creada
+            }
+            else
+            {
+                // Cancelado
+                await Swal.FireAsync("Operación Cancelada", "La categoría no se guardó.", SweetAlertIcon.Info);
+            }
+        }
+        else
+        {
+            await Swal.FireAsync("Operación no soportada", "Esta funcionalidad para actualización no está implementada aún.", SweetAlertIcon.Error);
+        }
+    }
+}
